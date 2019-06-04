@@ -1,26 +1,35 @@
 <template>
   <div class="game">
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-4 col-sm-12">
         <img class="float-left" :src="require('../assets/logo-game.png')"/>
       </div>
-      <div class="col-md-5">
+      <div class="col-md-5 col-sm-12">
         <div class="card">
           <div class="card-header text-left">
             <h1>Scenario {{currentScenario}}</h1>
           </div>
           <div class="card-body text-left">
             <div class="row">
-              <div class="col-md-8">
-                <p>{{currentScenarioObj.text}}</p>
+              <div class="col-md-8 col-sm-12">
+                <p v-html="currentScenarioObj.text">{{currentScenarioObj.text}}</p>
               </div>
               <div v-if="multiChoice" class="col-md-4">
                 <b-form-group label="Please select at least 1 option">
-                  <b-form-checkbox-group id="multiChoiceGroup" :options="multiChoiceOptions">
+                  <b-form-checkbox-group id="multiChoiceGroup" v-model="multiChoiceSelection" :state="state">
+                    <b-form-invalid-feedback :state="state">{{multiSelectText}}</b-form-invalid-feedback>
+                    <b-form-valid-feedback :state="state">Press submit when you are ready</b-form-valid-feedback>
+                    <b-form-checkbox switch v-for="choice in multiChoiceOptions" :value="choice"
+                                     v-bind:class="{'groupA' : (choice === 'A' || choice === 'Small'),
+                                                   'groupB' : (choice === 'B' || choice === 'Large'),
+                                                   'groupC' : choice === 'C'}">
+                      {{choice}}
+                    </b-form-checkbox>
                   </b-form-checkbox-group>
                 </b-form-group>
+                <button :disabled="multiChoiceSelection.length === 0" class="btn btn-success btn-block" @click="actionMultiChoice">Submit</button>
               </div>
-              <div v-else class="col-md-4">
+              <div v-else class="col-md-4 col-sm-12">
                 <button id="yesbtn" :disabled="conflicts === true ? true : false" class="btn btn-success btn-block"
                         @click="actionResponse(1)">Yes
                 </button>
@@ -47,7 +56,12 @@
           <tr style="height:25px;" v-for="(row, idx1) in calendar">
             <th scope="row" style="width:110px;">{{row.name}}</th>
             <td v-for="(col, idx2) in row.bookings"
-                v-bind:class="{ 'badge-success' : col.rate > 0 && col.confirmed === 'false', 'tableleftdivider': idx2 === 0, 'badge-danger' : col.rate > 0 && col.confirmed === 'conflicted'}">
+                v-bind:class="{ 'badge-success' : col.rate > 0 && col.confirmed === 'false',
+                                'tableleftdivider': idx2 === 0,
+                                'badge-danger' : col.rate > 0 && col.confirmed === 'conflicted',
+                                'groupABorder' : col.rate > 0 && col.group === 'A',
+                                'groupBBorder' : col.rate > 0 && col.group === 'B',
+                                'groupCBorder' : col.rate > 0 && col.group === 'C'}">
               <span v-if="col.rate > 0">£{{col.rate.toFixed(2)}}</span>
             </td>
           </tr>
@@ -127,36 +141,48 @@
         conflicts: false,
         modalText: '',
         multiChoice: false,
-        multiChoiceOptions: []
+        multiChoiceOptions: [],
+        multiChoiceSelection: []
       }
     },
     methods: {
       apply: function () {
         let potentialBookings = this.currentScenarioObj.potentialBookings
         let conflictFound = false;
+
+        if (this.currentScenarioObj.additionalConfirmedBookings.length > 0) {
+          console.log(this.currentScenarioObj.additionalConfirmedBookings.length)
+          this.currentScenarioObj.additionalConfirmedBookings.forEach(booking => {
+            let room = this.calendar[booking.roomIndex]
+            room.bookings[booking.dayIndex].rate = booking.rate
+            room.bookings[booking.dayIndex].confirmed = 'true'
+          })
+        }
+
         potentialBookings.forEach(pBooking => {
           let room = this.calendar[pBooking.roomIndex]
 
           if (room.bookings[pBooking.dayIndex].rate > 0) {
-            room.bookings[pBooking.dayIndex].rate = pBooking.rate
             room.bookings[pBooking.dayIndex].confirmed = 'conflicted'
             conflictFound = true
           } else {
-            room.bookings[pBooking.dayIndex].rate = pBooking.rate
             room.bookings[pBooking.dayIndex].confirmed = 'false'
+          }
+
+          room.bookings[pBooking.dayIndex].rate = pBooking.rate
+
+          if (pBooking.group) {
+            room.bookings[pBooking.dayIndex].group = pBooking.group
           }
         })
         this.conflicts = conflictFound;
 
         if (this.currentScenarioObj.popover) {
-          if (this.currentScenario === 6) {
-            this.modalText = this.currentScenarioObj.popoverText
-            this.$bvModal.show('Scenario6Modal')
-          }
+          this.modalText = this.currentScenarioObj.popoverText
+          this.$bvModal.show('Scenario6Modal')
         }
 
         if (this.currentScenarioObj.multiChoice) {
-          console.log(this.currentScenarioObj.multiChoiceOptions)
           this.multiChoiceOptions = this.currentScenarioObj.multiChoiceOptions
           this.multiChoice = true
         } else {
@@ -178,9 +204,83 @@
         })
         this.currentScenario++
         this.apply()
+      },
+      actionMultiChoice: function () {
+        if (this.currentScenario === 6) {
+          // to defer to another object
+          let hasA = this.multiChoiceSelection.includes('A')
+          let hasB = this.multiChoiceSelection.includes('B')
+          let hasC = this.multiChoiceSelection.includes('C')
+
+          let potentialBookings = this.currentScenarioObj.potentialBookings
+          potentialBookings.forEach(pBooking => {
+            let room = this.calendar[pBooking.roomIndex]
+            let group = pBooking.group
+            let decision5 = this.decisions[4]
+            if (hasA && group === 'A') {
+              if (decision5 === 1 && (pBooking.dayIndex === 2 && (pBooking.roomIndex === 5 || pBooking.roomIndex === 6 || pBooking.roomIndex === 7)) ||
+                (pBooking.dayIndex === 3 && (pBooking.roomIndex === 5 || pBooking.roomIndex === 6 || pBooking.roomIndex === 7))) {
+                room.bookings[pBooking.dayIndex].confirmed = 'conflicted'
+                room.bookings[pBooking.dayIndex].group = ''
+              } else {
+                room.bookings[pBooking.dayIndex].confirmed = 'true'
+                room.bookings[pBooking.dayIndex].group = ''
+              }
+            }
+            else if (group === 'A') {
+              let conflict = room.bookings[pBooking.dayIndex].confirmed === 'conflicted'
+              if (conflict) {
+                room.bookings[pBooking.dayIndex].rate = 90
+              } else {
+                room.bookings[pBooking.dayIndex].rate = 0
+              }
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+            }
+            else if (hasB && group === 'B'){
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+            }
+            else if (group === 'B') {
+              room.bookings[pBooking.dayIndex].rate = 0
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+            }
+            else if (hasC && group === 'C') {
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+            }
+            else if (group === 'C') {
+              room.bookings[pBooking.dayIndex].rate = 75
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+            }
+          })
+
+        } else if (this.currentScenario === 8) {
+
+        }
+        this.decisions.push(this.multiChoiceSelection.join(''))
+        this.multiChoiceSelection = []
+        this.currentScenario++;
+        this.apply()
       }
     },
     computed: {
+      state: function () {
+        if (this.currentScenario === 6) {
+          return this.multiChoiceSelection.length >= 1
+        } else {
+          return this.multiChoiceSelection.length === 1
+        }
+      },
+      multiSelectText: function () {
+        if (this.currentScenario === 6) {
+          return 'Please select at least one'
+        } else {
+          return 'Please select only one'
+        }
+      },
       currentScenarioObj: function () {
         return Game.getScenario(this.currentScenario, this.decisions)
       },
@@ -272,5 +372,56 @@
 
   .hidden {
     display: none;
+  }
+
+  .groupABorder {
+    border: 3px solid #ff8c00 !important;
+  }
+
+  .groupA, .groupA > label {
+    color: #ff8c00 !important;
+  }
+
+  .groupA > input:checked + label::before {
+    border-color: #ff8c00 !important;
+    background-color: #ff8c00 !important;
+  }
+
+  .groupA > input + label::before {
+    border-color: #ff8c00 !important;
+  }
+
+  .groupCBorder {
+    border: 3px solid #00a80e !important;
+  }
+
+  .groupB, .groupB > label {
+    color: #0073ad !important;
+  }
+
+  .groupB > input:checked + label::before {
+    border-color: #0073ad !important;
+    background-color: #0073ad !important;
+  }
+
+  .groupB > input + label::before {
+    border-color: #0073ad !important;
+  }
+
+  .groupC, .groupC > label {
+    color: #00a80e !important;
+  }
+
+  .groupC > input:checked + label::before {
+    border-color: #00a80e !important;
+    background-color: #00a80e !important;
+  }
+
+  .groupC > input + label::before {
+    border-color: #00a80e !important;
+  }
+
+  .groupBBorder {
+    border: 3px solid #0073ad !important;
   }
 </style>

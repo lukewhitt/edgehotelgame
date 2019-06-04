@@ -14,6 +14,12 @@ const Game = {
       return Scenarios.Scenario5.get()
     } else if (index === 6) {
       return Scenarios.Scenario6.get(decisions)
+    } else if (index === 7) {
+      return Scenarios.Scenario7.get()
+    } else if (index === 8) {
+      return Scenarios.Scenario8.get(decisions)
+    } else if (index === 9) {
+      return Scenarios.Scenario9.get(decisions)
     }
   },
 
