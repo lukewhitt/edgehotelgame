@@ -3,17 +3,26 @@
     <div class="row">
 
       <div class="col-md-4">
-        <img :src="require('../assets/logo-game.png')"/>
+        <img class="float-left" :src="require('../assets/logo-game.png')"/>
       </div>
       <div class="col-md-5">
         <div class="card">
-          <div class="card-header">
-            <h1>Scenario 1</h1>
+          <div class="card-header text-left">
+            <h1>Scenario {{currentScenario}}</h1>
           </div>
-          <div class="card-body">
-            <p>There is a party on Tuesday, and the guests need somewhere to stay the night before. 10 rooms on a special offer is perfect for them. Will you accept their booking?</p>
-            <button class="btn btn-success" @click="test">Yes</button>
-            <button class="btn btn-danger">No</button>
+          <div class="card-body text-left">
+            <div class="row">
+              <div class="col-md-8">
+                <p>{{currentScenarioObj.text}}</p>
+              </div>
+              <div class="col-md-4">
+                <button id="yesbtn" :disabled="conflicts === true ? true : false" class="btn btn-success btn-block" @click="actionResponse(1)">Yes</button>
+                <button id="nobtn" class="btn btn-danger btn-block" @click="actionResponse(0)">No</button>
+
+                <div :class="conflicts === true ? '' : 'hidden'">You cannot accept this offer as you'll be overbooked.</div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -23,21 +32,22 @@
       <div class="col-md-9">
         <table class="table table-hover main-table table-sm table-bordered">
           <thead>
-            <tr>
-              <th scope="col" v-for="day in days">
-                {{day}}
-              </th>
-            </tr>
+          <tr>
+            <th scope="col" v-for="day in days">
+              {{day}}
+            </th>
+          </tr>
           </thead>
           <tbody>
           <tr style="height:25px;" v-for="(row, idx1) in calendar">
             <th scope="row" style="width:110px;">{{row.name}}</th>
-            <td v-for="(col, idx2) in row.bookings" v-bind:class="{ tableleftdivider : idx2 === 0, 'badge-success' : col.confirmed === false}">
+            <td v-for="(col, idx2) in row.bookings"
+                v-bind:class="{ 'badge-success' : col.rate > 0 && col.confirmed === 'false', 'tableleftdivider': idx2 === 0, 'badge-danger' : col.rate > 0 && col.confirmed === 'conflicted'}">
               <span v-if="col.rate > 0">£{{col.rate.toFixed(2)}}</span>
             </td>
           </tr>
           <tr>
-            <td><strong>REVPAR</strong></td>
+            <td><strong>ADR</strong></td>
             <td v-for="(rev) in revparDaily">
               <strong>£{{rev.toFixed(2)}}</strong>
             </td>
@@ -81,7 +91,7 @@
                 <h5>{{occupancy}}%</h5>
               </div>
               <div class="col-md-4 text-center">
-                <h4>Overall REVPAR</h4>
+                <h4>Overall ADR</h4>
                 <h5>£{{revparTotal}}</h5>
               </div>
             </div>
@@ -89,52 +99,79 @@
         </div>
       </div>
     </div>
+
+    <b-modal id="Scenario6Modal">
+      <p class="my-4">{{modalText}}</p>
+      <div slot="modal-footer" class="w-100">
+      </div>
+    </b-modal>
   </div>
 </template>
 <script>
-  import Vue from 'vue'
+  import Game from '@/game/game'
 
   export default {
     data: function () {
       return {
-        calendar: [
-          {name: 'Room 1', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}]},
-          {name: 'Room 2', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}]},
-          {name: 'Room 3', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}]},
-          {name: 'Room 4', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}]},
-          {name: 'Room 5', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}]},
-          {name: 'Room 6', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}]},
-          {name: 'Room 7', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}]},
-          {name: 'Room 8', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0}]},
-          {name: 'Room 9', bookings:  [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 10', bookings: [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 11', bookings: [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 12', bookings: [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 75.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 75.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 13', bookings: [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 75.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 75.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 14', bookings: [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 75.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 75.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 15', bookings: [{confirmed: true, rate: 0.0},   {confirmed: true, rate: 75.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 0.0},   {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 16', bookings: [{confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 17', bookings: [{confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 18', bookings: [{confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 19', bookings: [{confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 0.0},   {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]},
-          {name: 'Room 20', bookings: [{confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 0.0}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 90.00}, {confirmed: true, rate: 95.00}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 100.0}, {confirmed: true, rate: 0.0}]}
-        ],
-        days: ["", "Mon","Tue","Wed","Thur","Fri","Sat","Sun","Mon","Tue","Wed","Thur","Fri","Sat","Sun"]
+        calendar: [],
+        days: ["", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"],
+        decisions: [],
+        currentScenario: 1,
+        conflicts: false,
+        modalText: ''
       }
     },
     methods: {
-      test: function (){
-        let room = this.calendar[1]
-        room.bookings[1].rate = 100;
-        room.bookings[1].confirmed = false
-        //Vue.set(this.calendar[1].bookings.rate, 1, 1000)
-        //this.calendar[1].bookings[1] = 100.00;
+      apply: function () {
+        let potentialBookings = this.currentScenarioObj.potentialBookings
+        let conflictFound = false;
+        potentialBookings.forEach(pBooking => {
+          let room = this.calendar[pBooking.roomIndex]
+
+          if (room.bookings[pBooking.dayIndex].rate > 0) {
+            room.bookings[pBooking.dayIndex].rate = pBooking.rate
+            room.bookings[pBooking.dayIndex].confirmed = 'conflicted'
+            conflictFound = true
+          } else {
+            room.bookings[pBooking.dayIndex].rate = pBooking.rate
+            room.bookings[pBooking.dayIndex].confirmed = 'false'
+          }
+        })
+        this.conflicts = conflictFound;
+
+        if (this.currentScenarioObj.popover) {
+          if (this.currentScenario === 6) {
+            this.modalText = this.currentScenarioObj.popoverText
+            this.$bvModal.show('Scenario6Modal')
+          }
+        }
+      },
+      actionResponse: function (response) {
+        this.decisions.push(response)
+        let potentialBookings = this.currentScenarioObj.potentialBookings
+        potentialBookings.forEach(pBooking => {
+          let room = this.calendar[pBooking.roomIndex]
+
+          if (response === 1) {
+            room.bookings[pBooking.dayIndex].confirmed = 'true'
+          } else {
+            let booking = {rate:0,confirmed:'false'}
+            Vue.set(room.bookings, pBooking.dayIndex, booking)
+          }
+        })
+        this.currentScenario++
+        this.apply()
       }
     },
     computed: {
+      currentScenarioObj: function () {
+        return Game.getScenario(this.currentScenario, this.decisions)
+      },
       totalFunds: function () {
         let tally = 0
-        this.calendar.forEach(cal => cal.bookings.forEach(booking => tally = tally + booking.rate))
+        this.calendar.forEach(cal => cal.bookings
+          .filter(booking => booking.confirmed === 'true')
+          .forEach(booking => tally = tally + booking.rate))
 
         return tally
       },
@@ -143,8 +180,9 @@
         for (let i = 0; i < 14; i++) {
           let tally = 0;
           let count = 0;
-          this.calendar.forEach(cal => {
-            if (cal.bookings[i].rate > 0) {
+          this.calendar
+            .forEach(cal => {
+            if (cal.bookings[i].rate > 0 && cal.bookings[i].confirmed === 'true') {
               tally = tally + cal.bookings[i].rate
               count++
             }
@@ -169,7 +207,8 @@
       },
       occupancy: function () {
         let count = 0;
-        this.calendar.forEach(cal => cal.bookings.forEach(booking => {
+        this.calendar
+          .forEach(cal => cal.bookings.filter(booking => booking.confirmed === 'true').forEach(booking => {
           if (booking.rate > 0) {
             count++
           }
@@ -178,6 +217,10 @@
         let res = (count / 280) * 100
         return res.toFixed(2)
       }
+    },
+    created: function () {
+      this.calendar = Game.getDefaultState()
+      this.apply()
     }
   }
 </script>
@@ -187,6 +230,11 @@
     padding-left: 40px;
     padding-right: 40px;
     padding-top: 10px;
+  }
+
+  .card-header {
+    background: #fff;
+    border: none;
   }
 
   .table {
@@ -203,5 +251,9 @@
 
   .table td, .table thead th, .table th {
     border-color: #bbb;
+  }
+
+  .hidden {
+    display: none;
   }
 </style>
