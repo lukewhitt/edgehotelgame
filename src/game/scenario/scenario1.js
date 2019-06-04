@@ -57,7 +57,9 @@ const Scenario1 = {
           rate: 75
         }
       ],
-      additionalConfirmedBookings: []
+      additionalConfirmedBookings: [],
+      multiChoiceOptions: [],
+      multiChoice: false
     }
   }
 }

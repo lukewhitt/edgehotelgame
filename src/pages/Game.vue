@@ -1,7 +1,6 @@
 <template>
   <div class="game">
     <div class="row">
-
       <div class="col-md-4">
         <img class="float-left" :src="require('../assets/logo-game.png')"/>
       </div>
@@ -15,14 +14,20 @@
               <div class="col-md-8">
                 <p>{{currentScenarioObj.text}}</p>
               </div>
-              <div class="col-md-4">
-                <button id="yesbtn" :disabled="conflicts === true ? true : false" class="btn btn-success btn-block" @click="actionResponse(1)">Yes</button>
+              <div v-if="multiChoice" class="col-md-4">
+                <b-form-group label="Please select at least 1 option">
+                  <b-form-checkbox-group id="multiChoiceGroup" :options="multiChoiceOptions">
+                  </b-form-checkbox-group>
+                </b-form-group>
+              </div>
+              <div v-else class="col-md-4">
+                <button id="yesbtn" :disabled="conflicts === true ? true : false" class="btn btn-success btn-block"
+                        @click="actionResponse(1)">Yes
+                </button>
                 <button id="nobtn" class="btn btn-danger btn-block" @click="actionResponse(0)">No</button>
-
                 <div :class="conflicts === true ? '' : 'hidden'">You cannot accept this offer as you'll be overbooked.</div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -100,15 +105,17 @@
       </div>
     </div>
 
-    <b-modal id="Scenario6Modal">
-      <p class="my-4">{{modalText}}</p>
-      <div slot="modal-footer" class="w-100">
+    <b-modal size="xl" centered id="Scenario6Modal">
+      <h2>{{modalText}}</h2>
+      <div class="p-2 border-top-0" slot="modal-footer" slot-scope="{ ok }">
+        <b-button size="lg" variant="secondary" @click="ok()">OK</b-button>
       </div>
     </b-modal>
   </div>
 </template>
 <script>
   import Game from '@/game/game'
+  import Vue from 'vue'
 
   export default {
     data: function () {
@@ -118,7 +125,9 @@
         decisions: [],
         currentScenario: 1,
         conflicts: false,
-        modalText: ''
+        modalText: '',
+        multiChoice: false,
+        multiChoiceOptions: []
       }
     },
     methods: {
@@ -145,6 +154,14 @@
             this.$bvModal.show('Scenario6Modal')
           }
         }
+
+        if (this.currentScenarioObj.multiChoice) {
+          console.log(this.currentScenarioObj.multiChoiceOptions)
+          this.multiChoiceOptions = this.currentScenarioObj.multiChoiceOptions
+          this.multiChoice = true
+        } else {
+          this.multiChoice = false
+        }
       },
       actionResponse: function (response) {
         this.decisions.push(response)
@@ -155,7 +172,7 @@
           if (response === 1) {
             room.bookings[pBooking.dayIndex].confirmed = 'true'
           } else {
-            let booking = {rate:0,confirmed:'false'}
+            let booking = {rate: 0, confirmed: 'false'}
             Vue.set(room.bookings, pBooking.dayIndex, booking)
           }
         })
@@ -182,11 +199,11 @@
           let count = 0;
           this.calendar
             .forEach(cal => {
-            if (cal.bookings[i].rate > 0 && cal.bookings[i].confirmed === 'true') {
-              tally = tally + cal.bookings[i].rate
-              count++
-            }
-          })
+              if (cal.bookings[i].rate > 0 && cal.bookings[i].confirmed === 'true') {
+                tally = tally + cal.bookings[i].rate
+                count++
+              }
+            })
           if (count === 0) {
             let res = 0
             holding[i] = res
@@ -209,10 +226,10 @@
         let count = 0;
         this.calendar
           .forEach(cal => cal.bookings.filter(booking => booking.confirmed === 'true').forEach(booking => {
-          if (booking.rate > 0) {
-            count++
-          }
-        }))
+            if (booking.rate > 0) {
+              count++
+            }
+          }))
 
         let res = (count / 280) * 100
         return res.toFixed(2)
