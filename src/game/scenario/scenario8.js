@@ -289,13 +289,13 @@ const Scenario8 = {
         {
           roomIndex: 7,
           dayIndex: 5,
-          rate: '<span class="groupABorder">75</span> or <span class="groupBBorder">100</span>',
+          rate: '<span class="groupBBorder">75</span> or <span class="groupABorder">100</span>',
           group: 'AB'
         },
         {
           roomIndex: 7,
           dayIndex: 6,
-          rate: '<span class="groupABorder">75</span> or <span class="groupBBorder">100</span>',
+          rate: '<span class="groupBBorder">75</span> or <span class="groupABorder">100</span>',
           group: 'AB'
         },
         {
@@ -328,13 +328,13 @@ const Scenario8 = {
         {
           roomIndex: 8,
           dayIndex: 6,
-          rate: '<span class="groupABorder">75</span> or <span class="groupBBorder">100</span>',
+          rate: '<span class="groupBBorder">75</span> or <span class="groupABorder">100</span>',
           group: 'AB'
         },
         {
           roomIndex: 8,
           dayIndex: 7,
-          rate: '<span class="groupABorder">75</span> or <span class="groupBBorder">100</span>',
+          rate: '<span class="groupBBorder">75</span> or <span class="groupABorder">100</span>',
           group: 'AB'
         },
         {

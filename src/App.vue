@@ -22,4 +22,9 @@ body {
   text-align: center;
   color: #2c3e50;
 }
+
+  .no-margin {
+    margin-left: 0;
+    margin-right: 0;
+  }
 </style>

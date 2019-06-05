@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-md-center align-items-center h-100 min-vh-100">
+  <div class="row justify-content-md-center align-items-center h-100 min-vh-100 no-margin">
     <div class="col-md-6">
       <h1 class="subtitle-color">INFORMATION</h1>
       <div class="card">

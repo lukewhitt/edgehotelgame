@@ -2,7 +2,9 @@
   <div class="game">
     <div class="row">
       <div class="col-md-4 col-sm-12">
-        <img class="float-left" :src="require('../assets/logo-game.png')"/>
+        <img class="float-left" :src="require('../assets/logo-bg.png')"/>
+        <p class="game-title">HOTEL REVENUE MANAGEMENT</p>
+        <p class="header-link">A FINANCIAL PERFORMANCE SCENARIO FOR HOTELS</p>
       </div>
       <div class="col-md-8 col-sm-12 mb-3">
         <div class="card">
@@ -133,7 +135,7 @@
     </div>
 
     <b-modal size="xl" centered id="Scenario6Modal">
-      <h2>{{modalText}}</h2>
+      <h2 class="game-title" v-html="modalText">{{modalText}}</h2>
       <div class="p-2 border-top-0" slot="modal-footer" slot-scope="{ ok }">
         <b-button size="lg" variant="secondary" @click="ok()">OK</b-button>
       </div>
@@ -279,6 +281,7 @@
         } else if (this.currentScenario === 8) {
           let hasSmall = this.multiChoiceSelection.includes('Small')
           let hasLarge = this.multiChoiceSelection.includes('Large')
+          let hasBoth = this.multiChoiceSelection.includes('Both')
 
           let potentialBookings = this.currentScenarioObj.potentialBookings
           potentialBookings.forEach(pBooking => {
@@ -289,7 +292,7 @@
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
               room.bookings[pBooking.dayIndex].rate = 100
-            } else if (group === 'A') {
+            } else if (group === 'A' && !hasBoth && !hasSmall) {
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
               room.bookings[pBooking.dayIndex].rate = 0
@@ -297,16 +300,43 @@
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
               room.bookings[pBooking.dayIndex].rate = 75
-            } else if (group === 'B') {
+            } else if (group === 'B' && !hasBoth && !hasLarge) {
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
               room.bookings[pBooking.dayIndex].rate = 0
+            } else if (hasBoth && group === 'B') {
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+            } else if (hasBoth && group === 'A') {
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
             }
           })
+        } else if (this.currentScenario === 10) {
+          let hasA = this.multiChoiceSelection[0].includes('A -')
+          let hasB = this.multiChoiceSelection[0].includes('B -')
+          let hasC = this.multiChoiceSelection[0].includes('C -')
+
+          if (hasB) {
+            this.$router.push('faillie')
+          } else if (hasC) {
+            this.$router.push('failtruth')
+          } else if (hasA) {
+            this.$router.push({
+              name: 'Success',
+              params: {finalTotal: this.totalFunds, finalOccupancy: this.occupancy, finalRevpar: this.revparTotal}
+            })
+          }
         }
         this.decisions.push(this.multiChoiceSelection.join(''))
         this.multiChoiceSelection = []
         this.currentScenario++;
+        this.apply()
+      },
+      init: function () {
+        this.currentScenario = 1
+        this.decisions = []
+        this.calendar = Game.getDefaultState()
         this.apply()
       }
     },
@@ -380,8 +410,7 @@
       }
     },
     created: function () {
-      this.calendar = Game.getDefaultState()
-      this.apply()
+      this.init()
     }
   }
 </script>
@@ -474,5 +503,14 @@
 
   .stats-table {
     font-size:20px;
+  }
+
+  .game-title {
+    font-size: 40px;
+    font-weight: 300;
+  }
+
+  .header-link {
+    color: #cbba92;
   }
 </style>

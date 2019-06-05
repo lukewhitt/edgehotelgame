@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-md-center align-items-center h-100 min-vh-100 logo-bg">
+  <div class="row justify-content-md-center align-items-center h-100 min-vh-100 logo-bg no-margin">
     <div class="col-md-6">
       <div class="card finish-card">
         <div class="card-body text-left">
@@ -21,11 +21,11 @@
                 </tr>
                 <tr>
                   <td>Overall Costing</td>
-                  <td><strong>£{{costing}}</strong></td>
+                  <td><strong>£{{costing.toFixed(2)}}</strong></td>
                 </tr>
                 <tr>
                   <td>Profit</td>
-                  <td><strong>£{{profit}}</strong></td>
+                  <td><strong>£{{profit.toFixed(2)}}</strong></td>
                 </tr>
               </table>
               <p>For more information on hospitality carrers and education:</p>
@@ -70,14 +70,12 @@
   }
 </script>
 <style>
-
-
   .finish-card {
-    background-color: #cbba92;
+    background-color: #cbba92 !important;
   }
 
   a {
-    color: #212529;
+    color: #212529 !important;
   }
 
   .logo-bg {

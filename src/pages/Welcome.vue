@@ -1,5 +1,5 @@
 <template>
-  <div class="row h-100 min-vh-100 justify-content-center align-items-center">
+  <div class="row h-100 min-vh-100 justify-content-center align-items-center no-margin">
     <form class="col-12">
       <img :src="require('../assets/logo-intro.png')"/>
       <h1 class="display-4">HOTEL REVENUE MANAGEMENT</h1>
