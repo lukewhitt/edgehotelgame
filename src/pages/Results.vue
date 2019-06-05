@@ -1,17 +1,43 @@
 <template>
-  <div class="row justify-content-md-center align-items-center">
+  <div class="row justify-content-md-center align-items-center h-100 min-vh-100 logo-bg">
     <div class="col-md-6">
-      <div class="card">
+      <div class="card finish-card">
         <div class="card-body text-left">
-          <h1>Congratulations</h1>
-          <p>Stats:</p>
-          <p>Total: {{finalTotal}}</p>
-          <p>Occupancy: {{finalOccupancy}}</p>
-          <p>ADR: {{finalRevpar}}</p>
-          <p><strong>// TODO - add in leaderboard</strong></p>
+          <div class="row">
+            <div class="col-md-6">
+              <h2>Thank you for playing Revenue Management!</h2>
+              <table class="table table-borderless">
+                <tr>
+                  <td>Ranking</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Occupancy %</td>
+                  <td><strong>{{finalOccupancy}} %</strong></td>
+                </tr>
+                <tr>
+                  <td>Overall Income</td>
+                  <td><strong>£{{finalTotal}}</strong></td>
+                </tr>
+                <tr>
+                  <td>Overall Costing</td>
+                  <td><strong>£{{costing}}</strong></td>
+                </tr>
+                <tr>
+                  <td>Profit</td>
+                  <td><strong>£{{profit}}</strong></td>
+                </tr>
+              </table>
+              <p>For more information on hospitality carrers and education:</p>
+              <p><a href="http://www.myhospitalitylife.com">www.myhospitalitylife.com</a></p>
+              <p><a href="http://www.essex.ac.uk/departments/edge-hotel-school">http://www.essex.ac.uk/departments/edge-hotel-school</a></p>
+            </div>
+            <div class="col-md-6 align-items-center h-100">
+              <img :src="require('../assets/hotel1.jpg')" class="img-fluid"/>
+            </div>
+          </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -24,6 +50,18 @@
         finalRevpar: 0
       }
     },
+    computed: {
+      occupancyRooms: function () {
+        let res = (this.finalOccupancy / 100) * 244
+        return res
+      },
+      costing: function () {
+        return this.occupancyRooms * 10
+      },
+      profit: function () {
+        return this.finalTotal - this.costing
+      }
+    },
     created: function () {
       this.finalTotal = this.$route.params.finalTotal
       this.finalOccupancy = this.$route.params.finalOccupancy
@@ -31,3 +69,20 @@
     }
   }
 </script>
+<style>
+
+
+  .finish-card {
+    background-color: #cbba92;
+  }
+
+  a {
+    color: #212529;
+  }
+
+  .logo-bg {
+    background-image: url("../assets/logo-bg.png");
+    background-position: bottom right;
+    background-repeat: no-repeat;
+  }
+</style>

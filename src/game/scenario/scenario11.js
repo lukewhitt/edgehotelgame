@@ -2,7 +2,7 @@
 const Scenario11 = {
   get () {
     return {
-      text: 'Congratulations, you\'ve completed the gmae! Click either button to proceed',
+      text: 'Congratulations, you\'ve completed the game! Click either button to proceed',
       popover: false,
       popoverText: '',
       potentialBookings: [],

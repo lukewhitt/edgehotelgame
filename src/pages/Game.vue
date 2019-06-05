@@ -4,7 +4,7 @@
       <div class="col-md-4 col-sm-12">
         <img class="float-left" :src="require('../assets/logo-game.png')"/>
       </div>
-      <div class="col-md-8 col-sm-12">
+      <div class="col-md-8 col-sm-12 mb-3">
         <div class="card">
           <div class="card-header text-left">
             <h1>Scenario {{currentScenario}}</h1>
@@ -59,11 +59,12 @@
             <td v-for="(col, idx2) in row.bookings"
                 v-bind:class="{ 'badge-success' : col.rate > 0 && col.confirmed === 'false',
                                 'tableleftdivider': idx2 === 0,
-                                'badge-danger' : col.rate > 0 && col.confirmed === 'conflicted',
+                                'badge-danger' : (col.rate > 0 && col.confirmed === 'conflicted') || (typeof col.rate === 'string'),
                                 'groupABorder' : col.rate > 0 && col.group === 'A',
                                 'groupBBorder' : col.rate > 0 && col.group === 'B',
                                 'groupCBorder' : col.rate > 0 && col.group === 'C'}">
-              <span v-if="col.rate > 0">£{{col.rate.toFixed(2)}}</span>
+              <span v-if="typeof col.rate === 'number' && col.rate > 0">£{{col.rate.toFixed(2)}}</span>
+              <span v-if="typeof col.rate === 'string'" v-html="col.rate">{{col.rate}}</span>
             </td>
           </tr>
           <tr>
@@ -276,7 +277,32 @@
           })
 
         } else if (this.currentScenario === 8) {
+          let hasSmall = this.multiChoiceSelection.includes('Small')
+          let hasLarge = this.multiChoiceSelection.includes('Large')
 
+          let potentialBookings = this.currentScenarioObj.potentialBookings
+          potentialBookings.forEach(pBooking => {
+            let room = this.calendar[pBooking.roomIndex]
+            let group = pBooking.group
+
+            if (hasSmall && (group === 'A' || group === 'AB')) {
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+              room.bookings[pBooking.dayIndex].rate = 100
+            } else if (group === 'A') {
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+              room.bookings[pBooking.dayIndex].rate = 0
+            } else if (hasLarge && (group === 'B' || group === 'AB')) {
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+              room.bookings[pBooking.dayIndex].rate = 75
+            } else if (group === 'B') {
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+              room.bookings[pBooking.dayIndex].group = ''
+              room.bookings[pBooking.dayIndex].rate = 0
+            }
+          })
         }
         this.decisions.push(this.multiChoiceSelection.join(''))
         this.multiChoiceSelection = []
@@ -394,6 +420,7 @@
 
   .groupABorder {
     border: 3px solid #ff8c00 !important;
+    color: #ff8c00;
   }
 
   .groupA, .groupA > label {
@@ -411,6 +438,7 @@
 
   .groupCBorder {
     border: 3px solid #00a80e !important;
+    color: #00a80e;
   }
 
   .groupB, .groupB > label {
@@ -441,6 +469,7 @@
 
   .groupBBorder {
     border: 3px solid #0073ad !important;
+    color: #0073ad;
   }
 
   .stats-table {
