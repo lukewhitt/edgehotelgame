@@ -1,7 +1,7 @@
 <template>
-  <div class="row justify-content-md-center">
+  <div class="row justify-content-md-center align-items-center h-100 min-vh-100">
     <div class="col-md-6">
-      <h1 class="display-4">How to play</h1>
+      <p class="subtitle-color">THE CHALLENGE</p>
 
       <div class="card">
         <div class="card-body">
@@ -42,3 +42,9 @@
     }
   }
 </script>
+<style>
+  .subtitle-color {
+    color: #8c6720;
+    font-size:65px;
+  }
+</style>

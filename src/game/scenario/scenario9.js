@@ -2,9 +2,7 @@
 const Scenario9 = {
   get (decisions) {
 
-    let choseBothStr = decisions[decisions.length - 1]
-    console.log(choseBothStr)
-    console.log(decisions)
+    let choseBothStr = decisions[7]
     let choseBoth = choseBothStr.includes('Both')
 
     return {
@@ -13,6 +11,31 @@ const Scenario9 = {
       popoverText: '',
       potentialBookings: this.getPotentialBookings(choseBoth),
       additionalConfirmedBookings: [
+        {
+          dayIndex: 2,
+          roomIndex: 4,
+          rate: 0
+        },
+        {
+          dayIndex: 2,
+          roomIndex: 5,
+          rate: 0
+        },
+        {
+          dayIndex: 2,
+          roomIndex: 6,
+          rate: 0
+        },
+        {
+          dayIndex: 2,
+          roomIndex: 13,
+          rate: 0
+        },
+        {
+          dayIndex: 2,
+          roomIndex: 14,
+          rate: 0
+        },
         {
           dayIndex: 2,
           roomIndex: 18,

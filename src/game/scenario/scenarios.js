@@ -8,3 +8,7 @@ export { default as Scenario6 } from './scenario6'
 export { default as Scenario7 } from './scenario7'
 export { default as Scenario8 } from './scenario8'
 export { default as Scenario9 } from './scenario9'
+export { default as Scenario10 } from './scenario10'
+export { default as Scenario11 } from './scenario11'
+
+

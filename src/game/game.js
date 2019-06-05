@@ -20,6 +20,10 @@ const Game = {
       return Scenarios.Scenario8.get(decisions)
     } else if (index === 9) {
       return Scenarios.Scenario9.get(decisions)
+    } else if (index === 10) {
+      return Scenarios.Scenario10.get()
+    } else if (index === 11) {
+      return Scenarios.Scenario11.get()
     }
   },
 

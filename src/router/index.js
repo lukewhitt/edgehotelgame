@@ -4,6 +4,7 @@ import Welcome from '@/pages/Welcome'
 import HowToPlay from '@/pages/HowToPlay'
 import About from '@/pages/About'
 import Game from '@/pages/Game'
+import Results from "@/pages/Results";
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/game',
       name: 'Game',
       component: Game
+    },
+    {
+      path: '/results',
+      name: 'Results',
+      component: Results
     }
   ]
 })

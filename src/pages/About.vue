@@ -1,7 +1,7 @@
 <template>
-  <div class="row justify-content-md-center">
+  <div class="row justify-content-md-center align-items-center h-100 min-vh-100">
     <div class="col-md-6">
-      <h1 class="display-4">This game is based around <strong>Wivenhoe House</strong></h1>
+      <h1 class="subtitle-color">INFORMATION</h1>
       <div class="card">
         <div class="card-body">
           <div class="row">

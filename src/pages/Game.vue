@@ -4,7 +4,7 @@
       <div class="col-md-4 col-sm-12">
         <img class="float-left" :src="require('../assets/logo-game.png')"/>
       </div>
-      <div class="col-md-5 col-sm-12">
+      <div class="col-md-8 col-sm-12">
         <div class="card">
           <div class="card-header text-left">
             <h1>Scenario {{currentScenario}}</h1>
@@ -27,7 +27,8 @@
                     </b-form-checkbox>
                   </b-form-checkbox-group>
                 </b-form-group>
-                <button :disabled="multiChoiceSelection.length === 0" class="btn btn-success btn-block" @click="actionMultiChoice">Submit</button>
+                <button :disabled="multiChoiceSelection.length === 0" class="btn btn-success btn-block" @click="actionMultiChoice">Submit
+                </button>
               </div>
               <div v-else class="col-md-4 col-sm-12">
                 <button id="yesbtn" :disabled="conflicts === true ? true : false" class="btn btn-success btn-block"
@@ -76,42 +77,53 @@
       </div>
       <div class="col-md-3">
         <div class="row align-items-end">
-          <div class="col-md-12 text-left">
-            <h1>Prices</h1>
-            <table class="table table-borderless">
-              <tr>
-                <td>Maximum price for a room:</td>
-                <td><strong>£100.00</strong></td>
-              </tr>
-              <tr>
-                <td>Price for a room <strong>without</strong> a travel agency:</td>
-                <td><strong>£95.00</strong></td>
-              </tr>
-              <tr>
-                <td>Price for a room with a promo code:</td>
-                <td><strong>£90.00</strong></td>
-              </tr>
-              <tr>
-                <td>Price for a room with a special offer:</td>
-                <td><strong>£75.00</strong></td>
-              </tr>
-            </table>
+          <div class="col-md-12 text-left mb-5">
+            <div class="card">
+              <div class="card-header">
+                <h1>Prices</h1>
+              </div>
+              <div class="card-body">
+                <table class="table table-borderless">
+                  <tr>
+                    <td>Maximum price for a room:</td>
+                    <td><strong>£100.00</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Price for a room <strong>without</strong> a travel agency:</td>
+                    <td><strong>£95.00</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Price for a room with a promo code:</td>
+                    <td><strong>£90.00</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Price for a room with a special offer:</td>
+                    <td><strong>£75.00</strong></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
           </div>
-          <hr class="my-4"/>
           <div class="col-md-12 text-left ">
-            <h1>Stats</h1>
-            <div class="row">
-              <div class="col-md-4 text-center">
-                <h3>Total Funds</h3>
-                <h4>£{{totalFunds}}</h4>
+            <div class="card">
+              <div class="card-header">
+                <h1>Stats</h1>
               </div>
-              <div class="col-md-4 text-center">
-                <h4>Room Occupancy</h4>
-                <h5>{{occupancy}}%</h5>
-              </div>
-              <div class="col-md-4 text-center">
-                <h4>Overall ADR</h4>
-                <h5>£{{revparTotal}}</h5>
+              <div class="card-body">
+                <table class="table table-borderless stats-table">
+                  <tr>
+                    <td>Total Funds</td>
+                    <td><strong>£{{totalFunds}}</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Room Occupancy</td>
+                    <td><strong>{{occupancy}}%</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Overall ADR</td>
+                    <td><strong>£{{revparTotal}}</strong></td>
+                  </tr>
+                </table>
               </div>
             </div>
           </div>
@@ -190,20 +202,31 @@
         }
       },
       actionResponse: function (response) {
-        this.decisions.push(response)
-        let potentialBookings = this.currentScenarioObj.potentialBookings
-        potentialBookings.forEach(pBooking => {
-          let room = this.calendar[pBooking.roomIndex]
 
-          if (response === 1) {
-            room.bookings[pBooking.dayIndex].confirmed = 'true'
-          } else {
-            let booking = {rate: 0, confirmed: 'false'}
-            Vue.set(room.bookings, pBooking.dayIndex, booking)
+        if (this.currentScenario === 11) {
+          this.$router.push({
+            name: 'Results',
+            params: {finalTotal: this.totalFunds, finalOccupancy: this.occupancy, finalRevpar: this.revparTotal}
+          })
+        } else {
+          this.decisions.push(response)
+          let potentialBookings = this.currentScenarioObj.potentialBookings
+          potentialBookings.forEach(pBooking => {
+            let room = this.calendar[pBooking.roomIndex]
+
+            if (response === 1) {
+              room.bookings[pBooking.dayIndex].confirmed = 'true'
+            } else {
+              let booking = {rate: 0, confirmed: 'false'}
+              Vue.set(room.bookings, pBooking.dayIndex, booking)
+            }
+          })
+          if (this.currentScenario === 9 && !this.decisions[7].includes('Both')) {
+            this.currentScenario++
           }
-        })
-        this.currentScenario++
-        this.apply()
+          this.currentScenario++
+          this.apply()
+        }
       },
       actionMultiChoice: function () {
         if (this.currentScenario === 6) {
@@ -226,8 +249,7 @@
                 room.bookings[pBooking.dayIndex].confirmed = 'true'
                 room.bookings[pBooking.dayIndex].group = ''
               }
-            }
-            else if (group === 'A') {
+            } else if (group === 'A') {
               let conflict = room.bookings[pBooking.dayIndex].confirmed === 'conflicted'
               if (conflict) {
                 room.bookings[pBooking.dayIndex].rate = 90
@@ -236,21 +258,17 @@
               }
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
-            }
-            else if (hasB && group === 'B'){
+            } else if (hasB && group === 'B') {
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
-            }
-            else if (group === 'B') {
+            } else if (group === 'B') {
               room.bookings[pBooking.dayIndex].rate = 0
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
-            }
-            else if (hasC && group === 'C') {
+            } else if (hasC && group === 'C') {
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
-            }
-            else if (group === 'C') {
+            } else if (group === 'C') {
               room.bookings[pBooking.dayIndex].rate = 75
               room.bookings[pBooking.dayIndex].confirmed = 'true'
               room.bookings[pBooking.dayIndex].group = ''
@@ -423,5 +441,9 @@
 
   .groupBBorder {
     border: 3px solid #0073ad !important;
+  }
+
+  .stats-table {
+    font-size:20px;
   }
 </style>
