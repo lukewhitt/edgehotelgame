@@ -56,7 +56,7 @@ const Scenario9 = {
     if (choseBoth) {
       return 'Unfortunately you have two rooms which are double booked! Click either button to try and resolve the issue'
     } else {
-      return 'You are faced with one final request. You are called late by a man who would like to purchase seven rooms on Thursday for £50 each. Do you accept his offer?'
+      return 'You are faced with one final request. You are called late by a man who would like to purchase 7 rooms on Thursday for £50 each. Do you accept his offer?'
     }
   },
 

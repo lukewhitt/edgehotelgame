@@ -5,18 +5,18 @@
 
       <div class="card">
         <div class="card-body">
-          <p>This game follows the basic principles of the decision whether to accommodate guests or not depending on the factors
+          <p>This scenario follows the basic principles of the decision whether to accommodate guests or not depending on the factors
             surrounding them, for example the amount of nights they are staying for and the prices they are willing to pay.</p>
-          <p>The basic rules of the game are that a request will pop up on the right, showing the factors mentioned and a brief description
+          <p>The basic rules of the scenario are that a request will pop up on the right, showing the factors mentioned and a brief description
             of their motives. If you wish to accommodate them, click
             <button class="btn btn-sm btn-success">Yes</button>
             , and if you don't then click
             <button class="btn btn-sm btn-danger">No</button>
             .
           </p>
-          <p>The table on the left represents the overall bookings you have agreed to, with the current requests being highlighted in green.
+          <p>The table on the right represents the overall bookings you have agreed to, with the current requests being highlighted in green.
             It is spread over a fortnight, with 20 empty rooms that need to be filled up with guests. Your job is to fill as many rooms as
-            you can for the best price and to win the game you need to make all the best decisions.</p>
+            you can for the best price and to win the scenario you need to make all the best decisions.</p>
           <p>Your total funds will be shown in the bottom right of the screen, so you can see your progress. This changes all the time from
             accepting requests and from people cancelling their bookings. There is also the possibility that bookings overlap so make sure
             you are careful when choosing whether or not to accept an offer.</p>

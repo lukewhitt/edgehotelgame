@@ -9,7 +9,7 @@
               <table class="table table-borderless">
                 <tr>
                   <td>Ranking</td>
-                  <td></td>
+                  <td><strong>{{ranking}}</strong></td>
                 </tr>
                 <tr>
                   <td>Occupancy %</td>
@@ -28,9 +28,9 @@
                   <td><strong>£{{profit.toFixed(2)}}</strong></td>
                 </tr>
               </table>
-              <p>For more information on hospitality carrers and education:</p>
+              <p>For more information on hospitality careers and education:</p>
               <p><a href="http://www.myhospitalitylife.com">www.myhospitalitylife.com</a></p>
-              <p><a href="http://www.essex.ac.uk/departments/edge-hotel-school">http://www.essex.ac.uk/departments/edge-hotel-school</a></p>
+              <p><a href="http://www.essex.ac.uk/departments/edge-hotel-school">www.essex.ac.uk/departments/edge-hotel-school</a></p>
             </div>
             <div class="col-md-6 align-items-center h-100">
               <img :src="require('../assets/hotel1.jpg')" class="img-fluid"/>
@@ -60,6 +60,31 @@
       },
       profit: function () {
         return this.finalTotal - this.costing
+      },
+      ranking: function () {
+        if (this.finalOccupancy > 88) {
+          return '1st'
+        } else if (this.finalOccupancy >= 87) {
+          return '2nd'
+        } else if (this.finalOccupancy >= 86) {
+          return '3rd'
+        } else if (this.finalOccupancy >= 85) {
+          return '4th'
+        } else if (this.finalOccupancy >= 84) {
+          return '5th'
+        } else if (this.finalOccupancy >= 83) {
+          return '6th'
+        } else if (this.finalOccupancy >= 82) {
+          return '7th'
+        } else if (this.finalOccupancy >= 81) {
+          return '8th'
+        } else if (this.finalOccupancy >= 90) {
+          return '9th'
+        }
+
+
+
+
       }
     },
     created: function () {

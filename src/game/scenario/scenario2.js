@@ -1,7 +1,7 @@
 const Scenario2 = {
-  get () {
+  get() {
     return {
-      text : 'An aspiring chef is attaining a cookery course in London for 5 days from Tuesday to Saturday, and he needs a place to stay. He is desperate and willing to pay full price.',
+      text: 'An aspiring chef is attending a cookery course in London for 5 days from Tuesday to Saturday, and he needs a place to stay; he is desperate and willing to pay full price.',
       popover: false,
       popoverText: '',
       potentialBookings: [

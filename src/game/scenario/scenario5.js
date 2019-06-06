@@ -1,7 +1,7 @@
 const Scenario5 = {
   get () {
     return {
-      text: 'A wedding is taking place in Wivenhoe House, and there are going to be hen and stag parties all week from Monday leading up to the big day. There will need to be 3 rooms booked out, and none of these have a discount applied.',
+      text: 'A wedding is taking place in Wivenhoe House, and there are going to be hen and stag parties all week from Monday leading up to the big day; they would like to book 3 rooms, and none of these have a discount applied.',
       popover: false,
       popoverText: '',
       potentialBookings: [

@@ -1,7 +1,7 @@
 const Scenario1 = {
   get () {
     return {
-      text: 'There is a party on Tuesday, and the guests need somewhere to stay the night before. ' +
+      text: 'There is a party on Tuesday, and the guests need somewhere to stay the night before; ' +
         '10 rooms on a special offer is perfect for them. Will you accept their booking?',
       popover: false,
       popoverText: '',

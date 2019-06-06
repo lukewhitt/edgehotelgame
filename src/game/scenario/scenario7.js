@@ -1,7 +1,7 @@
 const Scenario7 = {
   get () {
     return {
-      text: 'As a celebration, a group want to spend some time together visiting shows in Wivenhoe. Because they are students, they have a promotional code.',
+      text: 'As a celebration, a group want to spend some time together visiting shows in Wivenhoe; because they are students, they have a promotional code.',
       popover: false,
       popoverText: '',
       potentialBookings: [

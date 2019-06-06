@@ -11,7 +11,7 @@ const Scenario8 = {
     this.handleClashes(decisions)
 
     return {
-      text: '8) More people have booked rooms, and now you have three options. You can either accept a small request at maximum room price, a large request with rooms on special offer, or both. Choose carefully.',
+      text: 'More people have booked rooms, and now you have 3 options. You can accept the large request of 5 nights at a special offer of <span class="groupA">£75</span>, the small request of 3 nights at maximum price of <span class="groupB">£100</span> or you may take a risk and accept both bookings. Choose carefully.',
       popover: this.getModal(decisions),
       popoverText: 'Luckily for you, some people in other rooms on the same day as your overbooking cancel, and you have enough room to slot them in. Your risk payed off!',
       potentialBookings: this.clashes,
